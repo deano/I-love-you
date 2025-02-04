@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title></title>
+    <!-- Google Font for Fancy Text -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --primary: #ffffff;
+            --bg-color: rgb(255, 204, 219); /* Light pink background */
+            --bg-envelope-color: #f5edd1;
+            --envelope-tab: #ecdeb8;
+            --envelope-cover: #e6cfa7;
+            --shadow-color: rgba(0, 0, 0, 0.2);
+            --txt-color: #444;
+            --heart-color: rgb(252, 8, 231);
+            --brown-color: #8B4513; /* Brown color for the "h" */
+        }
+        body{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background: var(--bg-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh; /* Ensure full viewport height for mobile */
+            overflow: hidden; /* Prevent scrolling on small devices */
+        }
+        .container {
+            height: 100vh;
+            display: grid;
+            place-items: center;
+        }
+        .container > .envelope-wrapper {
+            background: var(--bg-envelope-color);
+            box-shadow: 0 0 40px var(--shadow-color);
+        }
+        .envelope-wrapper > .envelope {
+            position: relative;
+            width: 300px;
+            height: 230px;
+        }
+        .envelope-wrapper > .envelope::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            z-index: 2;
+            border-top: 130px solid var(--envelope-tab);
+            border-right: 150px solid transparent;
+            border-left: 150px solid transparent;
+            transform-origin: top;
+            transition: all 0.5s ease-in-out 0.7s;
+        }
+        .envelope-wrapper > .envelope::after {
+            content: "";
+            position: absolute;
+            z-index: 2;
+            width: 0px;
+            height: 0px;
+            border-top: 130px solid transparent;
+            border-right: 150px solid var(--envelope-cover);
+            border-bottom: 100px solid var(--envelope-cover);
+            border-left: 150px solid var(--envelope-cover);
+        }
+        .envelope > .letter {
+            position: absolute;
+            right: 20%;
+            bottom: 10px; /* Adjusted to bring the letter higher */
+            width: 54%;
+            height: 80%;
+            background: var(--primary);
+            text-align: center;
+            transition: all 1s ease-in-out;
+            box-shadow: 0 0 5px var(--shadow-color);
+            padding: 10px 5px; /* Adjusted padding to make it shorter */
+            overflow-y: auto; /* Enable scrolling if content overflows */
+            transform-origin: bottom;
+            transform: scale(1) translateY(0);
+            max-height: 80%; /* Limit height to prevent going off-screen */
+        }
+
+        .envelope > .letter > .text {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            color: var(--txt-color);
+            text-align: left;
+            font-size: 10px; /* Increased font size for better readability */
+            line-height: 20px; /* Match line height with gradient spacing */
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent 0,
+                transparent 18px,
+                rgba(0, 0, 0, 0.1) 18px,
+                rgba(0, 0, 0, 0.1) 20px
+            );
+            background-position: 0 1px; /* Shift lines slightly down */
+            padding: 10px 0; /* Add padding to align text with lines */
+        }
+        .heart {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 15px;
+            height: 15px;
+            background: var(--heart-color);
+            z-index: 4;
+            transform: translate(-50%, -20%) rotate(45deg);
+            transition: transform 0.5s ease-in-out 1s;
+            box-shadow: 0 1px 6px var(--shadow-color);
+            cursor: pointer;
+            transition: transform 0.5s ease-in-out;
+        }
+        .heart:before, 
+        .heart:after {
+            content: "";
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: var(--heart-color);
+            border-radius: 50%;
+        }
+        .heart:before {
+            top: -7.5px;
+        }
+        .heart:after {
+            right: 7.5px;
+        }
+        .flap > .envelope:before {
+            transform: rotateX(180deg);
+            z-index: 0;
+        }
+        .flap > .envelope > .letter {
+            bottom: 60%; /* Adjusted to ensure proper positioning when envelope opens */
+            transform: scale(1.5) translateY(-50%);
+            transition-delay: 1s;
+        }
+        .flap > .heart {
+            transform: rotate(90deg);
+            transition-delay: 0.4s;
+        }
+        .container > .envelope-wrapper > .developed-by {
+            position: absolute;
+            bottom: 30px;
+            left: 50%; /* Move the text to the center horizontally */
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 11px;
+            font-weight: lighter;
+        }
+        .envelope-wrapper > .click-me {
+            position: absolute;
+            top: 65%; /* Adjust the distance from the top as needed */
+            left: 50%; /* Center the text horizontally */
+            transform: translateX(-50%); /* Center the text horizontally */
+            color: var(--heart-color); /* Match the heart color */
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 3; /* Ensure the text appears above the heart */
+            font-style: italic; /* Added italic style */
+        }
+        .heart:hover {
+            transform: rotate(90deg);
+            transition-delay: 0.4s;
+        }
+
+        .flap > .heart:hover {
+            transform: rotate(0deg);
+        }
+
+        /* Additional Hearts Animation */
+        .heart-animation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none; /* Ensure hearts don't interfere with interactions */
+        }
+        .heart-animation .heart-small {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: var(--heart-color);
+            transform: rotate(45deg);
+            animation: float-up 3s ease-in-out infinite;
+        }
+        .heart-animation .heart-small:before,
+        .heart-animation .heart-small:after {
+            content: "";
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: var(--heart-color);
+            border-radius: 50%;
+        }
+        .heart-animation .heart-small:before {
+            top: -7.5px;
+        }
+        .heart-animation .heart-small:after {
+            right: 7.5px;
+        }
+        .heart-animation .heart-small:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        .heart-animation .heart-small:nth-child(2) {
+            top: 30%;
+            left: 40%;
+            animation-delay: 0.5s;
+        }
+        .heart-animation .heart-small:nth-child(3) {
+            top: 50%;
+            left: 70%;
+            animation-delay: 1s;
+        }
+        .heart-animation .heart-small:nth-child(4) {
+            top: 60%;
+            left: 20%;
+            animation-delay: 1.5s;
+        }
+        .heart-animation .heart-small:nth-child(5) {
+            top: 80%;
+            left: 50%;
+            animation-delay: 2s;
+        }
+        @keyframes float-up {
+            0% {
+                transform: translateY(0) rotate(45deg) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(45deg) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        /* Tiny Image Styling */
+        .tiny-image {
+            display: block;
+            width: 15px;
+            height: 15px;
+            margin: 5px auto 0; /* Add spacing above and below the image */
+        }
+
+        /* Fancy "h" Styling */
+        .fancy-h {
+            position: absolute;
+            top: 53%; /* Moved up slightly */
+            left: 50%;
+            transform: translateX(-50%) rotate(-10deg); /* Curl effect */
+            font-family: 'Great Vibes', cursive; /* More decorative font */
+            font-size: 30px; /* Smaller size */
+            font-style: italic; /* Italic style */
+            color: var(--brown-color); /* Brown color */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+        }
+
+        /* iPhone Safari-specific adjustments */
+        @media only screen and (max-width: 414px) {
+            .envelope-wrapper > .envelope {
+                width: 250px;
+                height: 190px;
+            }
+            .envelope > .letter {
+                width: 50%;
+                padding: 8px 4px; /* Adjusted padding for smaller screens */
+            }
+            .envelope > .letter > .text {
+                font-size: 6px;
+                line-height: 18px; /* Adjust line height for smaller screens */
+                background-position: 0 1px; /* Slightly shift lines for smaller screens */
+            }
+            .heart {
+                width: 12px;
+                height: 12px;
+            }
+            .heart:before, 
+            .heart:after {
+                width: 12px;
+                height: 12px;
+            }
+            .envelope-wrapper > .click-me {
+                font-size: 16px;
+            }
+            .flap > .envelope > .letter {
+                bottom: 55%; /* Adjust for smaller screens */
+                transform: scale(1.4) translateY(-50%);
+            }
+            .heart-animation .heart-small {
+                width: 10px;
+                height: 10px;
+            }
+            .heart-animation .heart-small:before,
+            .heart-animation .heart-small:after {
+                width: 10px;
+                height: 10px;
+            }
+            .tiny-image {
+                width: 12px;
+                height: 12px;
+            }
+            .fancy-h {
+                font-size: 22px; /* Smaller font size for mobile */
+                top: 51%; /* Adjusted position for mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="envelope-wrapper">
+            <div class="envelope">
+                <div class="letter">
+                    <div class="text">
+                        <strong>Hi bae ❤️</strong>
+                        <p>
+                         Words can't describe how much I love you & appreciate you. As you say it's the thought that counts.
+                        </p>
+                        <p>
+                        Will you be my Valentine? 🌹
+                        </p>
+                        <p>
+                         - D
+                        </p>
+                        <!-- Tiny Image -->
+                        <img src="cat.gif" alt="Tiny Image" class="tiny-image">
+                    </div>
+                </div>
+            </div>
+            <div class="developed-by">
+                <p>made with ❤️ by deano</p>
+            </div>
+            <div class="heart"></div>
+            <div class="click-me">
+                <p><em>Touch the heart</em></p> <!-- Updated text -->
+            </div>
+            <div class="heart-animation">
+                <div class="heart-small"></div>
+                <div class="heart-small"></div>
+                <div class="heart-small"></div>
+                <div class="heart-small"></div>
+                <div class="heart-small"></div>
+            </div>
+            <!-- Fancy "h" -->
+            <div class="fancy-h">h</div>
+        </div>
+    </div>
+    <script>
+        const envelope = document.querySelector('.envelope-wrapper');
+        const heart = document.querySelector('.heart');
+
+        heart.addEventListener('mouseenter', () => {
+            envelope.classList.add('flap');
+        });
+
+        heart.addEventListener('mouseleave', () => {
+            envelope.classList.remove('flap');
+        });
+
+        // Touch event support for mobile devices
+        heart.addEventListener('touchstart', () => {
+            envelope.classList.add('flap');
+        });
+        heart.addEventListener('touchend', () => {
+            envelope.classList.remove('flap');
+        });
+    </script>
+</body>
+</html>
